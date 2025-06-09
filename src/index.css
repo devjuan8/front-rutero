@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Aplica la fuente Poppins a los encabezados */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Aplica la fuente Roboto al cuerpo del texto */
+  body, p, span, button, input, label {
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Mejorar la legibilidad de los botones */
+  button {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500; /* Para que los botones sean un poco más llamativos */
+  }
+  
+  /* Fuente para la barra lateral, encabezado y otras partes importantes */
+  header, .sidebar, .menu-item {
+    font-family: 'Poppins', sans-serif;
+  }
+  
