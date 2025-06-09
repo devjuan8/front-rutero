@@ -19,7 +19,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const res = await api.post('/auth/login', { email: email.toLowerCase(), password });
       login(res.data.token);
     } catch (err) {
       setError(err.response?.data?.error || 'Error al iniciar sesión');

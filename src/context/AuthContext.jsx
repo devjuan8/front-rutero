@@ -19,7 +19,6 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const verificarToken = async () => {
       const token = localStorage.getItem('token');
-      
       if (!token) {
         setAuth({
           isAuthenticated: false,
@@ -29,14 +28,10 @@ export function AuthProvider({ children }) {
         });
         return;
       }
-      
       try {
-        // Verificar si el token ha expirado
         const decodedToken = jwtDecode(token);
         const currentTime = Date.now() / 1000;
-        
         if (decodedToken.exp < currentTime) {
-          // Token expirado
           localStorage.removeItem('token');
           setAuth({
             isAuthenticated: false,
@@ -46,15 +41,10 @@ export function AuthProvider({ children }) {
           });
           return;
         }
-        
-        // Configurar el token en los headers para todas las peticiones
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        
-        // Verificar token con el backend (opcional pero recomendado)
+        // Si tu backend NO tiene /auth/verificar, comenta el bloque siguiente:
         try {
           await api.get('/auth/verificar');
-          
-          // Si llegamos aquí, el token es válido
           setAuth({
             isAuthenticated: true,
             token,
@@ -62,19 +52,25 @@ export function AuthProvider({ children }) {
             loading: false
           });
         } catch (error) {
-          // Error de verificación con el backend
-          console.error('Error al verificar token con el backend:', error);
-          localStorage.removeItem('token');
-          setAuth({
-            isAuthenticated: false,
-            token: null,
-            user: null,
-            loading: false
-          });
+          // Si el error es 404, asumimos que el endpoint no existe y seguimos autenticado
+          if (error.response && error.response.status === 404) {
+            setAuth({
+              isAuthenticated: true,
+              token,
+              user: { id: decodedToken.id },
+              loading: false
+            });
+          } else {
+            localStorage.removeItem('token');
+            setAuth({
+              isAuthenticated: false,
+              token: null,
+              user: null,
+              loading: false
+            });
+          }
         }
       } catch (error) {
-        // Error al decodificar el token (token inválido)
-        console.error('Token inválido:', error);
         localStorage.removeItem('token');
         setAuth({
           isAuthenticated: false,
@@ -84,7 +80,6 @@ export function AuthProvider({ children }) {
         });
       }
     };
-    
     verificarToken();
   }, []);
 
